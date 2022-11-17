@@ -4,7 +4,7 @@ comment "
 ";
 comment "
 	Composition:
-	https://steamcommunity.com/sharedfiles/filedetails/?id=2889583480
+	https://steamcommunity.com/sharedfiles/filedetails/?id=2889594143
 ";
 comment "
     Tachanka Script
@@ -212,8 +212,8 @@ EH_inaccurateFire = _tachanka addEventHandler['firedman', {
         _unit forceWeaponFire[_weapon, "Burst"];
     };
     _v = velocityModelSpace _projectile;
-    _vset [0, (selectRandom[-1, 1]) * (random 60) + (_v# 0)];
-    _vset [2, (selectRandom[-1, 1]) * (random 30) + (_v# 2)];
+    _v set [0, (selectRandom[-1, 1]) * (random 60) + (_v# 0)];
+    _v set [2, (selectRandom[-1, 1]) * (random 30) + (_v# 2)];
     _projectile setVelocityModelSpace _v;
     _unit spawn {
         if !(_this getVariable['suppressing', false]) then {
@@ -252,7 +252,7 @@ comment "
 ";
 comment "
 	Composition:
-	https://steamcommunity.com/sharedfiles/filedetails/?id=2889583480
+	https://steamcommunity.com/sharedfiles/filedetails/?id=2889594143
 ";
 comment "
     License:
