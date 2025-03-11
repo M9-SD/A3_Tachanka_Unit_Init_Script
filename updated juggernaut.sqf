@@ -39,8 +39,19 @@ removeBackpack _tachanka;
 removeHeadgear _tachanka; 
 removeGoggles _tachanka; 
 comment "Add weapons"; 
-_tachanka addWeapon "arifle_RPK12_F"; 
-_tachanka addPrimaryWeaponItem "75rnd_762x39_AK12_Lush_Mag_Tracer_F"; 
+
+'randomize weapons';
+
+private _jugWepData = selectRandom [
+	["arifle_RPK12_F", "75rnd_762x39_AK12_Lush_Mag_Tracer_F", 1],
+	["LMG_Zafir_pointer_F", "150Rnd_762x54_Box_Tracer", 2],
+	["MMG_01_hex_F", "150Rnd_93x64_Mag", 2.5]
+];
+_unit setVariable ['innaccuracyFactor',_jugWepData # 2];
+private _jugwep = _jugWepData # 0;
+private _jugmag = _jugWepData # 1;
+_tachanka addWeapon _jugwep; 
+_tachanka addPrimaryWeaponItem _jugmag; 
 comment "Add containers"; 
 _tachanka forceAddUniform "U_O_R_Gorka_01_camo_F"; 
 _tachanka addVest "V_CarrierRigKBT_01_heavy_Olive_F"; 
@@ -52,7 +63,7 @@ from 1 to 2 do {
 }; 
 for "_i" 
 from 1 to 3 do { 
-    _tachanka addItemToVest "75rnd_762x39_AK12_Lush_Mag_Tracer_F"; 
+    _tachanka addItemToVest _jugmag; 
 }; 
 for "_i" 
 from 1 to 4 do { 
@@ -64,7 +75,7 @@ from 1 to 2 do {
 }; 
 for "_i" 
 from 1 to 3 do { 
-    _tachanka addItemToBackpack "75rnd_762x39_AK12_Lush_Mag_Tracer_F"; 
+    _tachanka addItemToBackpack _jugmag; 
 }; 
 _tachanka addHeadgear "H_CrewHelmetHeli_O"; 
 _tachanka addGoggles "G_Aviator"; 
@@ -77,7 +88,7 @@ comment "Set identity";
 [_tachanka, "WhiteHead_29", "male01rus"] call BIS_fnc_setIdentity; 
 [_tachanka, "Spetsnaz223rdDetachment"] call BIS_fnc_setUnitInsignia; 
 comment "Disable recoil for _tachanka (bullets are scripted inaccurate)."; 
-_tachanka setUnitRecoilCoefficient 0; 
+_tachanka setUnitRecoilCoefficient 0.01; 
 comment "Make _tachanka slow."; 
 [_tachanka, 0.7] remoteExec['setAnimSpeedCoef', 0, (str _tachanka) + 'setAnimSpeedCoefJIP']; 
 comment "Give _tachanka armor hitpoints (like shield in halo)"; 
@@ -215,9 +226,23 @@ EH_inaccurateFire = _tachanka addEventHandler['firedman', {
         _unit forceWeaponFire[_weapon, "Burst"]; 
     }; 
     _v = velocityModelSpace _projectile; 
-    _v set [0, (selectRandom[-1, 1]) * (random 60) + (_v# 0)]; 
-    _v set [2, (selectRandom[-1, 1]) * (random 30) + (_v# 2)]; 
-    _projectile setVelocityModelSpace _v; 
+	private _innaccuracyFactor = _unit getVariable ['innaccuracyFactor',1];
+
+	'2% chance for no accuracy change';
+	private _chancer = round (random 100);
+	if (random 100 < 2) then {
+		'normal ballistic accuracy';
+	} else {
+		'altered ballistic trajcetory';
+		if !(random 100 < 2) then {
+			_v set [0, (selectRandom[-1, 1]) * (random 60) * _innaccuracyFactor + (_v # 0)]; 
+		};
+		if !(random 100 < 2) then {
+			_v set [2, (selectRandom[-1, 1]) * (random 30) * _innaccuracyFactor + (_v # 2)]; 
+		};
+		_projectile setVelocityModelSpace _v; 
+	};
+    
     _unit spawn { 
         if !(_this getVariable['suppressing', false]) then { 
             if (!isNull(getAttackTarget _this)) then { 
