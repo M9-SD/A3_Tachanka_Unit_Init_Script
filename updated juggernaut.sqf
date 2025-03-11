@@ -93,7 +93,7 @@ _EH_handleDmg = _tachanka addEventHandler['HandleDamage', {
     _unit setVariable['hitLog', _hitLog]; 
     _armorHP_pre = _unit getVariable['ArmorHP', 100]; 
     if (_armorHP_pre > 0) then { 
-        _armorDmg = _damage * 0.75; 
+        _armorDmg = _damage * 1.25; 
         _armorHP_post = _armorHP_pre - _armorDmg; 
         _unit setVariable['ArmorHP', _armorHP_post]; 
         comment "dmgInspection = [_armorHP_pre, _damage, _armorDmg, _armorHP_post];"; 
